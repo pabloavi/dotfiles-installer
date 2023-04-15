@@ -1,7 +1,7 @@
 {
   "dotfiles_repo": "https://github.com/pabloavi/fedora-arch-dotfiles.git",
   "dotfiles_dir": "~/.dotfiles",
-  "backup_dir": "~/.local/bin/dotfiles_backup",
+  "backup_dir": "/tmp/dotfiles-backup",
   "options": {
     "verbose": false,
     "backup": true,

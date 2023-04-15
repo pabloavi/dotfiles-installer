@@ -49,7 +49,7 @@ The script can be configured by using a config file. The default config file is 
 {
   "dotfiles_repo": "http://repo_url.git", // The url of the dotfiles repository
   "dotfiles_dir": "~/.dotfiles", // The directory where the dotfiles will saved
-  "backup_dir": "~/.local/bin/dotfiles_backup", // The directory where the backup will be saved
+  "backup_dir": "/tmp/dotfiles_backup", // The directory where the backup will be saved
   "options": { // The options for the script
     "verbose": false,
     "backup": true,
