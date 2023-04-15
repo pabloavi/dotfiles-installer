@@ -102,6 +102,11 @@ The script can be configured by using a config file. The default config file is 
 
 The script works by cloning the dotfiles repository to the `dotfiles_dir` directory, and then installing the dotfiles with all dependencies by symlinking all files in it to the home directory, overwriting if necessary.
 
+## TODO
+
+- [ ] Add reinstall option, so that it can be used to update the dotfiles without running the whole script again.
+- [ ] Add uninstall option, so that all symlinks that come from the dotfiles are removed.
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
