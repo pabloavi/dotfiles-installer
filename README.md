@@ -72,16 +72,16 @@ The script can be configured by using a config file. The default config file is 
       // ...
     ],
   }
-  "pip3": [
+  "pip3": [ // The packages that will be installed with pip3
     "inkscape-figures",
     "pywal",
     // ...
     ],
-  "nodejs": [
+  "nodejs": [ // The packages that will be installed with npm
     "rae-api",
     // ...
     ],
-  "software_commands": [
+  "software_commands": [ // The commands that will be executed one by one (of course, you can use && to execute multiple commands)
     "wget https://raw.githubusercontent.com/ronniedroid/Wall-d/master/wall-d -O ~/.local/bin/wall-d",
     "rmtrash -rf ~/.config/nvim && git clone https://github.com/pabloavi/NvChad/ ~/.config/nvim",
     "dir='$HOME/Documentos/git/repos/multirice-dotfiles/' && rmtrash -rf $dir && git clone https://github.com/pabloavi/multirice-dotfiles/ $dir && cd $dir && ln -sf -r $dir/colorchanger/* ~/.local/bin/ && ln -sf -r $dir/ricechanger/* ~/.local/bin/* "
@@ -90,12 +90,12 @@ The script can be configured by using a config file. The default config file is 
   "ignored": [ // The files that will be ignored when installing the dotfiles
     "/.git/", // ending with a / means that it's a directory (so it will ignore everything inside it)
     "/README.md", // starting with a / means that it's a relative path to the dotfiles directory root
-    "/LICENSE",
-    "/.gitignore",
-    "/.gitmodules",
-    "/dotfiles_backup.zip",
-    "/installer/",
-    "indent.log" // without any of those, it's just a file name (so when matched, it will ignore the file)
+    "/LICENSE", // Ignore the file `LICENSE` in dotfiles root
+    "/.gitignore", // Ignore all files named `.gitignore` in any folder
+    "/.gitmodules", // Ignore all files named `.gitmodules` in any folder
+    "/dotfiles_backup.zip", // Ignore the file `/dotfiles_backup.zip` in dotfiles root
+    "/installer/", // Ignore all files inside `installer` directory in root (containning itself)
+    "indent.log" // Without any /, it means it's just a file name to match; i.e. this ignores all files named `indent.log` in any folder
   ]
 }
 ```
