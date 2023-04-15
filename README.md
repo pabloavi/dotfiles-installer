@@ -104,6 +104,7 @@ The script works by cloning the dotfiles repository to the `dotfiles_dir` direct
 
 ## TODO
 
+- [ ] Test with arch.
 - [ ] Add reinstall option, so that it can be used to update the dotfiles without running the whole script again.
 - [ ] Add uninstall option, so that all symlinks that come from the dotfiles are removed.
 
