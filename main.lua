@@ -107,121 +107,124 @@ backup_dir = backup_dir or config["backup_dir"] or default_opts["backup_dir"]
 local url = config["dotfiles_repo"]
 local dotfiles_name = string.match(url, "/([^/]+)%.git$")
 
-print("Cloning " .. dotfiles_name .. "...")
-if force then
-	utils.execute("rm -rf " .. dotfiles_dir)
-end
-if not utils.exists(dotfiles_dir) then
-	utils.execute("git clone " .. config["dotfiles_repo"] .. " " .. dotfiles_dir)
-else
-	colorp("ERROR: " .. "Already cloned\n", "red")
-end
-
--- Install dependencies
-distro = distro or config["distro"] or utils.distro()
-
-if verbose then
-	print("Detected distro: " .. distro)
-end
-
-if distro == "arch" then
-	-- install yay if not installed
-	if os.execute("pacman -Q yay") ~= 0 then
-		utils.execute("git clone https://aur.archlinux.org/yay.git")
-		os.execute("cd yay && makepkg -si")
+-- TODO: add --only-symlink and --no-clone
+if true then
+	print("Cloning " .. dotfiles_name .. "...")
+	if force then
+		utils.execute("rm -rf " .. dotfiles_dir)
+	end
+	if not utils.exists(dotfiles_dir) then
+		utils.execute("git clone " .. config["dotfiles_repo"] .. " " .. dotfiles_dir)
+	else
+		colorp("ERROR: " .. "Already cloned\n", "red")
 	end
 
-	-- update package managers
-	os.execute("sudo pacman -Su" .. yes) -- TODO: check if -y works
-	os.execute("yay -Su" .. yes)
-
-	-- install pacman packages
-	local pacman_packages = table.concat(config["arch"]["pacman"], " ")
-	os.execute("sudo pacman -S " .. yes .. pacman_packages)
+	-- Install dependencies
+	distro = distro or config["distro"] or utils.distro()
 
 	if verbose then
-		print("Installed pacman packages: " .. pacman_packages)
+		print("Detected distro: " .. distro)
 	end
 
-	-- install aur packages
-	local aur_packages = table.concat(config["arch"]["aur"], " ")
-	os.execute("yay -S " .. yes .. aur_packages)
+	if distro == "arch" then
+		-- install yay if not installed
+		if os.execute("pacman -Q yay") ~= 0 then
+			utils.execute("git clone https://aur.archlinux.org/yay.git")
+			os.execute("cd yay && makepkg -si")
+		end
+
+		-- update package managers
+		os.execute("sudo pacman -Su" .. yes) -- TODO: check if -y works
+		os.execute("yay -Su" .. yes)
+
+		-- install pacman packages
+		local pacman_packages = table.concat(config["arch"]["pacman"], " ")
+		os.execute("sudo pacman -S " .. yes .. pacman_packages)
+
+		if verbose then
+			print("Installed pacman packages: " .. pacman_packages)
+		end
+
+		-- install aur packages
+		local aur_packages = table.concat(config["arch"]["aur"], " ")
+		os.execute("yay -S " .. yes .. aur_packages)
+
+		if verbose then
+			print("Installed aur packages: " .. aur_packages)
+		end
+	elseif distro == "fedora" then
+		-- update package managers
+		if verbose then
+			colorp("Updating dnf...", "green")
+		end
+
+		os.execute("sudo dnf upgrade")
+
+		-- add copr repos
+		if verbose then
+			colorp("Adding copr repos...", "green")
+		end
+
+		local copr_repos = table.concat(config["fedora"]["copr"], " ")
+		os.execute("sudo dnf copr enable " .. yes .. copr_repos)
+
+		if verbose then
+			print("Added copr repos: " .. copr_repos)
+		end
+
+		-- install dnf packages
+		if verbose then
+			colorp("Installing dnf packages...", "green")
+		end
+
+		local dnf_packages = table.concat(config["fedora"]["dnf"], " ")
+		os.execute("sudo dnf install " .. yes .. dnf_packages)
+
+		if verbose then
+			print("Installed dnf packages: " .. dnf_packages)
+		end
+	else
+		colorp("ERROR: " .. "Unsupported distro\n", "red")
+		os.exit(1)
+	end
+
+	-- install pip3 packages
+	if verbose then
+		colorp("Installing pip3 packages...", "green")
+	end
+
+	local pip3_packages = table.concat(config["pip3"], " ")
+	os.execute("pip3 install " .. pip3_packages)
 
 	if verbose then
-		print("Installed aur packages: " .. aur_packages)
+		print("Installed pip3 packages: " .. pip3_packages)
 	end
-elseif distro == "fedora" then
-	-- update package managers
+
+	-- install nodejs packages
 	if verbose then
-		colorp("Updating dnf...", "green")
+		colorp("Installing nodejs packages...", "green")
 	end
 
-	os.execute("sudo dnf upgrade")
-
-	-- add copr repos
-	if verbose then
-		colorp("Adding copr repos...", "green")
-	end
-
-	local copr_repos = table.concat(config["fedora"]["copr"], " ")
-	os.execute("sudo dnf copr enable " .. yes .. copr_repos)
+	local nodejs_packages = table.concat(config["nodejs"], " ")
+	os.execute("npm install -g " .. nodejs_packages)
 
 	if verbose then
-		print("Added copr repos: " .. copr_repos)
+		print("Installed nodejs packages: " .. nodejs_packages)
 	end
 
-	-- install dnf packages
+	-- install software
 	if verbose then
-		colorp("Installing dnf packages...", "green")
+		colorp("Installing software...", "green")
 	end
 
-	local dnf_packages = table.concat(config["fedora"]["dnf"], " ")
-	os.execute("sudo dnf install " .. yes .. dnf_packages)
+	local software_commands = config["software_commands"]
+	for _, command in pairs(software_commands) do
+		utils.execute(command)
+	end
 
 	if verbose then
-		print("Installed dnf packages: " .. dnf_packages)
+		print("Executed:" .. table.concat(software_commands, "\n"))
 	end
-else
-	colorp("ERROR: " .. "Unsupported distro\n", "red")
-	os.exit(1)
-end
-
--- install pip3 packages
-if verbose then
-	colorp("Installing pip3 packages...", "green")
-end
-
-local pip3_packages = table.concat(config["pip3"], " ")
-os.execute("pip3 install " .. pip3_packages)
-
-if verbose then
-	print("Installed pip3 packages: " .. pip3_packages)
-end
-
--- install nodejs packages
-if verbose then
-	colorp("Installing nodejs packages...", "green")
-end
-
-local nodejs_packages = table.concat(config["nodejs"], " ")
-os.execute("npm install -g " .. nodejs_packages)
-
-if verbose then
-	print("Installed nodejs packages: " .. nodejs_packages)
-end
-
--- install software
-if verbose then
-	colorp("Installing software...", "green")
-end
-
-local software_commands = config["software_commands"]
-for _, command in pairs(software_commands) do
-	utils.execute(command)
-end
-
-if verbose then
-	print("Executed:" .. table.concat(software_commands, "\n"))
 end
 
 -- Get the files to symlink
@@ -233,6 +236,9 @@ if not files then
 	os.exit(1)
 end
 files = utils.remove_ignored(dotfiles_dir, files, ignored)
+for _, k in pairs(files) do
+	print(k)
+end
 
 -- create the backup directory
 if backup then
@@ -289,11 +295,12 @@ for _, file in ipairs(files) do
 
 	-- symlink the file
 	if not dry_run then
-		utils.execute("ln -sf " .. file_info.file .. " " .. file_info.home_file)
+		utils.execute("ln -sf " .. file .. " " .. file_info.home_file)
 	end
 
 	if verbose then
-		print("Symlinked " .. file_info.name .. " to " .. file_info.home_file)
+		print("Symlinked " .. file .. " to " .. file_info.home_file)
+		print("Command: " .. "ln -sf " .. file .. " " .. file_info.home_file)
 	end
 end
 

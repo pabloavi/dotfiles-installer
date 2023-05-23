@@ -90,7 +90,7 @@ M.get_file_info = function(file, dotfiles_dir, backup_dir)
 	--- Define properties
 	local file_name = M.valid_path(string.match(file, "/([^/]+)$"))
 	local file_path_to_dots = M.valid_path(string.match(file, dotfiles_dir .. "(.*)"))
-	local home_file = M.valid_path(os.getenv("HOME") .. "/" .. file)
+	local home_file = M.valid_path(os.getenv("HOME") .. "/" .. file_path_to_dots)
 	local home_dir = M.valid_path(string.match(home_file, "(.+)/[^/]+$"))
 	local backup_file = M.valid_path(os.getenv("HOME") .. backup_dir .. "/" .. file_path_to_dots)
 	local backup_path = M.valid_path(string.match(backup_file, "(.+)/[^/]+$"))
